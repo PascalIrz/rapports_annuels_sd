@@ -1,0 +1,82 @@
+---
+title: "Synthèse pêches électriques réseaux `r params$mon_annee`"
+subtitle: "Chargement des données"
+author: "OFB - DR Bretagne"
+date: "`r format(Sys.time(), 'Le %d %B %Y')`"
+output:
+  bookdown::word_document2
+always_allow_html: true
+params:
+#  mes_depts: !r c("22", "29", "35", "56")
+#  mes_depts: !r c("44", "49", "53", "72", "85")
+#  mon_annee: "2024"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+## Démarche
+
+La démarche est donnée pas à pas dans le [tuto](https://pascalirz.github.io/aspe/articles/aspe_01b_importation_tables_idg.html) du package `aspe`. 
+>NB la nécessité de disposer de l'accès à la base ASPE diffusée via l'IDG (réservé OFB).
+
+Si vous ne disposez pas de cet accès, la chaîne de traitement débute à l'étape suivante, après vous être procuré.e la base au format `.Rdata`.
+
+## Chargement des packages
+
+```{r}
+# devtools::install_github("pascalirz/aspe")
+# devtools::install_github("pascalirz/ggplotExtra")
+library(aspe)
+library(tidyverse)
+library(usethis)
+```
+
+## Chargement des données
+
+
+Vérification des variables d'environnement.
+
+```{r}
+Sys.getenv('BDD_IDG_HOST')
+Sys.getenv('BDD_IDG_LOGIN')
+Sys.getenv('BDD_IDG_PWD')
+Sys.getenv('BDD_IDG_PORT')
+Sys.getenv('BDD_IDG_ASPE_NAME')
+```
+
+Si besoin, se connecter au VPN.
+
+```{r}
+aspe_db <- imp_connecter_aspe_idg()
+```
+
+### Toutes les tables sauf les mesures individuelles
+
+```{r}
+imp_importer_aspe_idg(aspe_db, tab_excl = "mesure_individuelle")
+```
+
+
+### Les mesures individuelles (seulement s'il y en a besoin)
+
+```{r, eval = FALSE}
+imp_importer_aspe_idg(aspe_db, tab_select = "mesure_individuelle")
+```
+
+
+
+# sauvegarde
+
+```{r}
+dfs <- Filter(f = function(x) is.data.frame(get(x)) ,
+              x = ls()[ls() != "mesure_individuelle"])
+
+save(list = dfs,
+     file = "../raw_data/tables_aspe_sauf_mei.RData")
+
+if(exists("mesure_individuelle")) save(mesure_individuelle,
+                                       file = "../raw_data/mei.RData")
+```
+

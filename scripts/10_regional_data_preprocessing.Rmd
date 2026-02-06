@@ -7,9 +7,9 @@ output:
   bookdown::word_document2
 always_allow_html: true
 params:
-#  mes_depts: !r c("22", "29", "35", "56")
-  mes_depts: !r c("44", "49", "53", "72", "85")
-  mon_annee: "2024"
+  mes_depts: !r c("22", "29", "35", "56")
+#  mes_depts: !r c("44", "49", "53", "72", "85")
+  mon_annee: "2025"
 ---
 
 ```{r setup, include = FALSE}
@@ -32,26 +32,32 @@ library(tidyverse)
 ### Mesures individuelles
 
 ```{r}
-rdata_mei_1 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
-                                      pattern = "^mei_1")
+# rdata_mei_1 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
+#                                       pattern = "^mei_1")
+# 
+# load(rdata_mei_1)
+# mei <- temp_df
+# 
+# rdata_mei_2 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
+#                                       pattern = "^mei_2")
+# 
+# load(rdata_mei_2)
+# 
+# mesure_individuelle <- mei %>% 
+#   rbind(temp_df)
 
-load(rdata_mei_1)
-mei <- temp_df
+mesure_individuelle <- misc_nom_dernier_fichier(repertoire = "../raw_data",
+                                         pattern = "^mei")
 
-rdata_mei_2 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
-                                      pattern = "^mei_2")
-
-load(rdata_mei_2)
-
-mesure_individuelle <- mei %>% 
-  rbind(temp_df)
+load(mesure_individuelle)
+```
 ```
 
 
 ### Autres tables
 
 ```{r}
-rdata_tables <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
+rdata_tables <- misc_nom_dernier_fichier(repertoire = "../raw_data",
                                          pattern = "^tables")
 
 load(rdata_tables)

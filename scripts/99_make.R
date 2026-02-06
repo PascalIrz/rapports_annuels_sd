@@ -7,10 +7,10 @@ source(file = "R/01_fonctions.R")
 # Paramétrage
 # Liste des départements / année
 # mes_depts <- c('22', '29', '35', '56')
-mes_depts <- c('49', '44', '53', '72', '85')
+ mes_depts <- c('49', '44', '53', '72', '85')
 # mes_depts <- c('09', '11', '12', '30', '31', '32', '34', '46', '48', '65', '66', '81', '82')
 
-mon_annee <- 2024
+mon_annee <- 2025
 
 # -------------------------------------------------
 # organisation des répertoires si nécessaire
@@ -47,6 +47,23 @@ rmarkdown::render(
   params = list(mes_depts = mes_depts,
                 mon_annee = mon_annee)
 )
+
+# --------------------------------------------------
+# fiches qualité
+dossier_sortie <- "../fiches_CQ/PdL"
+
+rmarkdown::render(
+  input = 'scripts/12_quality_control.Rmd',
+  output_file = "../rapports_intermediaires/quality_control.docx",
+  envir = parent.frame(),
+  params = list(mes_depts = mes_depts,
+                mon_annee = mon_annee,
+                dossier_sortie = dossier_sortie)
+)
+
+
+
+
 
 # prétraitements géographiques
 rmarkdown::render(
@@ -139,7 +156,7 @@ unzip(mon_zip, exdir = path)
 
 # -------------------------------------------------
 # Assemblage des rapports départementaux
-# mon_dept <- "85"
+mon_dept <- "53"
 for(mon_dept in mes_depts)
   
 {

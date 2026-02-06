@@ -7,9 +7,11 @@ output:
   bookdown::word_document2
 always_allow_html: true
 params:
-#  mes_depts: !r c("22", "29", "35", "56")
-  mes_depts: !r c("44", "49", "53", "72", "85")
-  mon_annee: "2024"
+  mes_depts: !r c("22", "29", "35", "56")
+  dossier_sortie: "../fiches_CQ/BRE"
+#  mes_depts: !r c("44", "49", "53", "72", "85")
+#  dossier_sortie: "../fiches_CQ/PdL"
+  mon_annee: "2025"
 ---
 
 ```{r, include = FALSE}
@@ -34,27 +36,36 @@ library(aspeCQFD)
 ### Mesures individuelles
 
 ```{r}
-rdata_mei_1 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
-                                      pattern = "^mei_1")
+# rdata_mei_1 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
+#                                       pattern = "^mei_1")
+# 
+# load(rdata_mei_1)
+# mei <- temp_df
+# 
+# rdata_mei_2 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
+#                                       pattern = "^mei_2")
+# 
+# load(rdata_mei_2)
+# 
+# mesure_individuelle <- mei %>% 
+#   rbind(temp_df)
 
-load(rdata_mei_1)
-mei <- temp_df
+rdata_mei <- misc_nom_dernier_fichier(repertoire = "../raw_data",
+                                      pattern = "^mei")
 
-rdata_mei_2 <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
-                                      pattern = "^mei_2")
+load(rdata_mei)
 
-load(rdata_mei_2)
-
-mesure_individuelle <- mei %>% 
-  rbind(temp_df)
 ```
 
 
 ### Autres tables
 
 ```{r}
-rdata_tables <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
-                                         pattern = "^tables")
+# rdata_tables <- misc_nom_dernier_fichier(repertoire = "../../../../projets/ASPE/raw_data/rdata",
+#                                          pattern = "^tables")
+
+rdata_tables <- misc_nom_dernier_fichier(repertoire = "../raw_data",
+                                          pattern = "^tables")
 
 load(rdata_tables)
 ```
@@ -92,12 +103,54 @@ mes_codes_sandre <- data_fichesCQ$aspe_table_fiches %>%
 ## Génération des fiches
 
 ```{r}
+dossier_sortie <- params$dossier_sortie
+
 generate_fiche_cq_station(stations = mes_codes_sandre,
-                          dossier_sortie = "../fiches_CQ/PdL",
+                          dossier_sortie = dossier_sortie,
                           df_data = data_fichesCQ,
                           auteur = "OFB - DR Bretagne",
                           annee_debut = 1998,
-                          annee_fin = 2024,
+                          annee_fin = params$mon_annee,
                           interactive = T)
+```
+
+## Renommage des fiches
+
+```{r}
+file_names <- list.files(path = dossier_sortie) %>% 
+  sort()
+
+codes_sandre <- file_names %>% 
+  str_sub(26, 33)
+
+new_names <- data_fichesCQ$aspe_table_fiches_ipr %>%
+  select(code_sta_pp,
+         sta_libelle_sandre) %>%
+  mutate(code_sta = str_sub(code_sta_pp, 1, 8)) %>%
+  select(-code_sta_pp) %>%
+  distinct() %>% 
+  filter(code_sta %in% codes_sandre) %>%
+  transmute(name = paste0(code_sta, "_", sta_libelle_sandre, ".html")) %>%
+  pull(name) %>%
+  sort()
+
+path <- paste0(dossier_sortie, "/")
+
+file_names <- paste0(path, file_names)
+new_names <- paste0(path, new_names)
+
+# tests - should be all TRUE
+# data.frame(file_names, new_names) %>% 
+#   mutate(code = str_sub(file_names, -17, -10),
+#          test = str_detect(string = new_names, pattern = code)) %>% 
+#   count(test)
+#
+# file.exists(file_names)
+
+for(i in 1:length(file_names))
+  {
+file.rename(from = file_names[i],
+            to = new_names[i])
+}
 ```
 

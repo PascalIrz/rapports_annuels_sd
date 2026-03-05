@@ -56,3 +56,7 @@ vignettes/*.pdf
 
 # raw_data repo
 /raw_data/
+
+# quality control repo
+/fiches_CQ/PdL/
+/fiches_CQ/BRE/

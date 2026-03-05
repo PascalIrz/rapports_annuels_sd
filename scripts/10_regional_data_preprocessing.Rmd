@@ -51,7 +51,7 @@ mesure_individuelle <- misc_nom_dernier_fichier(repertoire = "../raw_data",
 
 load(mesure_individuelle)
 ```
-```
+
 
 
 ### Autres tables
@@ -436,6 +436,19 @@ reg_ope_env <- operation_description_peche %>%
   left_join(y = operation_donnees_environnementales %>% 
               select(ope_id = ode_ope_id,
                      profondeur_moyenne = ode_profondeur_moyenne_station))
+
+mes_pre <- reg_data %>% filter(ope_id %in% mes_ope_reg) %>% pull(pre_id) %>% unique()
+
+temps_passages <- prelevement_elementaire %>% 
+  filter(pre_id %in% mes_pre) %>% 
+  group_by(ope_id = pre_ope_id) %>% 
+  summarise(duree_peche = sum(pre_duree, na.rm =T))
+
+reg_ope_env <- reg_ope_env %>% 
+  left_join(temps_passages) %>% 
+  mutate(odp_duree_peche = ifelse(odp_duree_peche == 0,
+                                  duree_peche,
+                                  odp_duree_peche))
 
 # granulométrie dominante par opération
 reg_ope_granu <- facies %>% 

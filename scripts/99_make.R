@@ -6,9 +6,10 @@ source(file = "R/01_fonctions.R")
 # -------------------------------------------------
 # Paramétrage
 # Liste des départements / année
-# mes_depts <- c('22', '29', '35', '56')
- mes_depts <- c('49', '44', '53', '72', '85')
+ mes_depts <- c('22', '29', '35', '56')
+# mes_depts <- c('49', '44', '53', '72', '85')
 # mes_depts <- c('09', '11', '12', '30', '31', '32', '34', '46', '48', '65', '66', '81', '82')
+dossier_sortie_CQ <- "../fiches_CQ/BRE"
 
 mon_annee <- 2025
 
@@ -37,6 +38,17 @@ for(mon_dept in mes_depts) {
   unlink(my_path, recursive = TRUE, force = TRUE)
 }
 
+# ----------------------------------------------------
+# Chargement des données depuis l'IDG
+rmarkdown::render(
+  input = 'scripts/05_download_data_from_idg.Rmd',
+  output_file = "../rapports_intermediaires/05_download_data_from_idg.docx",
+  envir = parent.frame(),
+  params = list(mes_depts = mes_depts,
+                mon_annee = mon_annee)
+)
+
+
 
 # -------------------------------------------------
 # prétraitements à la région
@@ -50,15 +62,13 @@ rmarkdown::render(
 
 # --------------------------------------------------
 # fiches qualité
-dossier_sortie <- "../fiches_CQ/PdL"
-
 rmarkdown::render(
   input = 'scripts/12_quality_control.Rmd',
   output_file = "../rapports_intermediaires/quality_control.docx",
   envir = parent.frame(),
   params = list(mes_depts = mes_depts,
                 mon_annee = mon_annee,
-                dossier_sortie = dossier_sortie)
+                dossier_sortie = dossier_sortie_CQ)
 )
 
 
@@ -130,10 +140,6 @@ for (i in (1:nrow(df_nommage))) {
 }
 
 
-
-
-  
- 
   
 # Téléchargement, par département, des synthèses d'opérations par défaut ASPE en pdf (RCS, RRP, RHP)
 # Chaque fichier zip des opérations sur le département pour l'année considéré doit être
@@ -156,7 +162,11 @@ unzip(mon_zip, exdir = path)
 
 # -------------------------------------------------
 # Assemblage des rapports départementaux
+
+#NB sur pêches 2025 le zip extrait de Aspe ne comprenait pas la fiche de la Vilaine à Rieux qui a été chargée individuellement
+# et renommée pour commencer par le bon numéro d'opération
 mon_dept <- "53"
+
 for(mon_dept in mes_depts)
   
 {

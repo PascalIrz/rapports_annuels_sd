@@ -24,7 +24,7 @@ output:
 bibliography: rapports_depts_peches.bib
 csl: knowledge-and-management-of-aquatic-ecosystems.csl
 params:
-  mon_dept: "22"
+  mon_dept: "44"
   mon_annee: "2025"
 ---
 
@@ -250,6 +250,16 @@ dept_ipr %>%
             aes(x = annee,
                 y = ipr_med),
             col = "brown") +
+    scale_fill_manual(values = c("Très bon" = "#1f78b4",
+                               "Bon" = "#b2df8a",
+                               "Moyen" = "#ffff33",
+                                "Médiocre" = "#ff7f00",
+                               "Mauvais" = "#e41a1c"),
+                    limits= c("Très bon",
+                              "Bon",
+                              "Moyen",
+                              "Médiocre",
+                              "Mauvais")) +
   guides(fill = guide_legend(title = "Classe de qualité", nrow = 5, byrow = TRUE))
 ```
 

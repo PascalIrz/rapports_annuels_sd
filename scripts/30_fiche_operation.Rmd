@@ -12,7 +12,7 @@ output:
       in_header: FigNonNumerotees.tex
 always_allow_html: true
 params:
-  mon_ope: "89864"
+  mon_ope: "95044"
   #mon_ope: "87653"
 ---
 
@@ -155,8 +155,9 @@ reg_ope_metrique %>%
 
 ```{r}
 data <- reg_ope_capt %>%
-  filter(pop_id == mon_pop,
-         effectif > 0)
+  filter(pop_id == mon_pop#,
+         #effectif > 0
+         )
 
 richesse <- data %>% 
   summarise(n = n_distinct(esp_code_alternatif)) %>% 
@@ -176,7 +177,7 @@ mes_especes <- data %>%
 data %>% 
   filter(esp_nom_commun %in% mes_especes) %>% 
   gg_temp_abondance_groupe(var_espece = esp_nom_commun,
-                  var_abondance = effectif,
+                  var_abondance = densite,
                   nb_colonnes = 5)
 ```
 

@@ -109,7 +109,7 @@ generate_fiche_cq_station(stations = mes_codes_sandre,
                           dossier_sortie = dossier_sortie,
                           df_data = data_fichesCQ,
                           auteur = "OFB - DR Bretagne",
-                          annee_debut = 1998,
+                          annee_debut = 2016,
                           annee_fin = params$mon_annee,
                           interactive = T)
 ```
@@ -123,6 +123,8 @@ file_names <- list.files(path = dossier_sortie) %>%
 codes_sandre <- file_names %>% 
   str_sub(26, 33)
 
+site  <- as.data.frame(codes_sandre) %>% count(codes_sandre) %>% filter(n > 1) %>% pull(codes_sandre)
+
 new_names <- data_fichesCQ$aspe_table_fiches_ipr %>%
   select(code_sta_pp,
          sta_libelle_sandre) %>%
@@ -134,18 +136,36 @@ new_names <- data_fichesCQ$aspe_table_fiches_ipr %>%
   pull(name) %>%
   sort()
 
+# mon_double <- "04178486"
+# 
+# codes_sandres_new_names <- str_sub(new_names, 1, 8)
+# 
+# length(codes_sandre)
+# length(codes_sandres_new_names)
+# 
+# setdiff(codes_sandre, codes_sandres_new_names)
+
+
+
+
+# test <- data.frame(file_names = sort(file_names),
+#                    code_sandre = sort(codes_sandre)) %>% 
+#   mutate(test = which(str_detect(test$file_names, codes_sandres_new_names)))
+
+
+
 path <- paste0(dossier_sortie, "/")
 
 file_names <- paste0(path, file_names)
 new_names <- paste0(path, new_names)
 
 # tests - should be all TRUE
-# data.frame(file_names, new_names) %>% 
-#   mutate(code = str_sub(file_names, -17, -10),
-#          test = str_detect(string = new_names, pattern = code)) %>% 
-#   count(test)
-#
-# file.exists(file_names)
+data.frame(file_names, new_names) %>%
+  mutate(code = str_sub(file_names, -17, -10),
+         test = str_detect(string = new_names, pattern = code)) %>%
+  count(test)
+
+file.exists(file_names)
 
 for(i in 1:length(file_names))
   {

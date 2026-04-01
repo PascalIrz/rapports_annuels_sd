@@ -81,7 +81,9 @@ reg_data <- mef_creer_passerelle() %>%
       "RRP – Réseau de Référence Pérenne"
     ),
     annee > 1997
-  )
+  ) %>% 
+  select(-obj_libelle, -obj_id) %>% 
+  distinct()
 
 mes_pts <- reg_data %>% 
   filter(annee == params$mon_annee | annee == (as.numeric(params$mon_annee) - 1)) %>% 
@@ -89,7 +91,7 @@ mes_pts <- reg_data %>%
   unique()
 
 # sélection des opérations, ajout date et libelle de la station
-# les stations qui ne sont pas échantillonées sur les deux dernières années sont exclus
+# les stations qui ne sont pas échantillonées sur les deux dernières années sont exclues
 reg_ope <- reg_data %>% 
   mef_ajouter_intervenants() %>% 
   select(sta_id,
